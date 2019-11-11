@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace TinyDependencyInjectionContainer
 {
     public class InterfaceResolver{
-        T Instantiate<T>() where T : class{
+        public InterfaceResolver(string configFileName){}
+        public T Instantiate<T>() where T : class{
             return null;
         }
     }

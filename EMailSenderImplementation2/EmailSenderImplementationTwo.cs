@@ -10,7 +10,8 @@ namespace EMailSenderImplementation2
     public class EmailSenderImplementationTwo:IEmailSender
     {
         public bool SendEmail(string to, string body){
-            throw new NotImplementedException();
+            Console.WriteLine($"SendMailTwo send mail to {to} with body:\n{body}");
+            return true;
         }
     }
 }

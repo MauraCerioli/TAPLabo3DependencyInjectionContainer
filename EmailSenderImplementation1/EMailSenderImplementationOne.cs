@@ -10,7 +10,8 @@ namespace EmailSenderImplementation1
     public class EMailSenderImplementationOne:IEmailSender
     {
         public bool SendEmail(string to, string body){
-            throw new NotImplementedException();
+            Console.WriteLine($"SendMailOne send mail to {to} with body:\n{body}");
+            return true;
         }
     }
 }
