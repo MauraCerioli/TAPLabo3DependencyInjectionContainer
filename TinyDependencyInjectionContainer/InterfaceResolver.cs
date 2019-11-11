@@ -13,13 +13,13 @@ namespace TinyDependencyInjectionContainer {
 
         public InterfaceResolver(string configFileName) {
             string[] configLines;
-            try{
+            try {
                 configLines = File.ReadAllLines(configFileName);
             }
-            catch (Exception e){
-                throw new ArgumentException($"Impossible to read file {configFileName}",e);
+            catch (Exception e) {
+                throw new ArgumentException($"Impossible to read file {configFileName}", e);
             }
-            KnownTypes=new Dictionary<Type, Type>();
+            KnownTypes = new Dictionary<Type, Type>();
             foreach (var line in configLines) {
                 if (line.Length != 0 && '#' != line[0]) {
                     var parts = line.Split('*');
@@ -27,14 +27,14 @@ namespace TinyDependencyInjectionContainer {
                         throw new ArgumentException($"Config file with not weel-formed line ({line})");
                     GetTypeFromConfig(parts[0], parts[1], out var interfaceType);
                     GetTypeFromConfig(parts[2], parts[3], out var implementationType);
-                    if (!interfaceType.IsAssignableFrom(implementationType)){
+                    if (!interfaceType.IsAssignableFrom(implementationType)) {
                         throw new ArgumentException($"Type {implementationType.Name} does not implement {interfaceType.Name}");
                     }
-                    try{
-                        KnownTypes.Add(interfaceType,implementationType);
+                    try {
+                        KnownTypes.Add(interfaceType, implementationType);
                     }
-                    catch (Exception e){
-                        throw new ArgumentException($"Duplicated association for interface type {interfaceType.Name}",e);
+                    catch (Exception e) {
+                        throw new ArgumentException($"Duplicated association for interface type {interfaceType.Name}", e);
                     }
                 }
             }
@@ -49,7 +49,7 @@ namespace TinyDependencyInjectionContainer {
                     throw new ArgumentException($"Impossible to load {assemblyFile}", e);
                 }
                 try {
-                    type = assembly.GetType(typeName,true);
+                    type = assembly.GetType(typeName, true);
                 }
                 catch (Exception e) {
                     Debug.WriteLine(e);
@@ -57,15 +57,18 @@ namespace TinyDependencyInjectionContainer {
                 }
             }
         }
+
         public T Instantiate<T>() where T : class{
+            return InstantiateRecursionwise<T>(new List<Type>{typeof(T)});
+        }
+
+        public T InstantiateRecursionwise<T>(List<Type> inProgress) where T : class {
             Type implType;
-            //TODO Change to accept also classes. If T is class implType=typeof(T)
-            try{
+            if (KnownTypes.ContainsKey(typeof(T)))
                 implType = KnownTypes[typeof(T)];
-            }
-            catch (Exception e){
-                throw new ArgumentException($"Unknown type {typeof(T).Name}",e);
-            }
+            else if (typeof(T).IsClass) implType = typeof(T);
+            else throw new ArgumentException($"Unknown type {typeof(T).Name}");
+
             //TODO Change to use constructors with parameters
             /*
              * iteration on all implType constructors
