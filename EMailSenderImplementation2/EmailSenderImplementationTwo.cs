@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EmailSenderInterfaces;
 
-namespace EMailSenderImplementation2
+namespace EmailSenderImplementation2
 {
     public class EmailSenderImplementationTwo:IEmailSender
     {

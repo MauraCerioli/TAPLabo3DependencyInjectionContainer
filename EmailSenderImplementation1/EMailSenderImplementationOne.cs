@@ -7,7 +7,7 @@ using EmailSenderInterfaces;
 
 namespace EmailSenderImplementation1
 {
-    public class EMailSenderImplementationOne:IEmailSender
+    public class EmailSenderImplementationOne:IEmailSender
     {
         public bool SendEmail(string to, string body){
             Console.WriteLine($"SendMailOne send mail to {to} with body:\n{body}");

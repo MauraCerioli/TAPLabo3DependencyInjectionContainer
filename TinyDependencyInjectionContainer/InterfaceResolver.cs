@@ -27,6 +27,9 @@ namespace TinyDependencyInjectionContainer {
                         throw new ArgumentException($"Config file with not weel-formed line ({line})");
                     GetTypeFromConfig(parts[0], parts[1], out var interfaceType);
                     GetTypeFromConfig(parts[2], parts[3], out var implementationType);
+                    if (!interfaceType.IsAssignableFrom(implementationType)){
+                        throw new ArgumentException($"Type {implementationType.Name} does not implement {interfaceType.Name}");
+                    }
                     try{
                         KnownTypes.Add(interfaceType,implementationType);
                     }
@@ -46,7 +49,7 @@ namespace TinyDependencyInjectionContainer {
                     throw new ArgumentException($"Impossible to load {assemblyFile}", e);
                 }
                 try {
-                    type = assembly.GetType(typeName);
+                    type = assembly.GetType(typeName,true);
                 }
                 catch (Exception e) {
                     Debug.WriteLine(e);
@@ -56,12 +59,25 @@ namespace TinyDependencyInjectionContainer {
         }
         public T Instantiate<T>() where T : class{
             Type implType;
+            //TODO Change to accept also classes. If T is class implType=typeof(T)
             try{
                 implType = KnownTypes[typeof(T)];
             }
             catch (Exception e){
                 throw new ArgumentException($"Unknown type {typeof(T).Name}",e);
             }
+            //TODO Change to use constructors with parameters
+            /*
+             * iteration on all implType constructors
+             * foreach of them see if we can use it
+             * - foreach parameter we can build it by a recursive call
+             * - if we can build all parameters use them and return result of invocation
+             * - otherwise pass to next
+             * - if all fail throw
+             * Warning: to avoid infinite loop in recursion
+             * - use auxiliary method with extra parameter list of type with building in progress
+             * - if a parameter is of a type in the list abort
+             */
             return (T)Activator.CreateInstance(implType);
         }
     }
